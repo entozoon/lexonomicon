@@ -1,39 +1,85 @@
 import React, { Component } from "react";
 import "./App.scss";
 
-const getPhraseSynonyms = async (phrase: string) => {
-  console.log("phrase", phrase);
-  let url = `https://iinvq9pu20.execute-api.us-east-1.amazonaws.com/dev/phraseSynonyms?phrase=${phrase
+const getPhraseSynonyms: any = async (phrase: string) => {
+  // ^ <any> is laziness, I mean, I want it to be string[][] but TS won't let it
+  console.log("phrase:", phrase);
+  let url = `https://iinvq9pu20.execute-api.us-east-1.amazonaws.com/dev/synonyms?phrase=${phrase
     .split(" ")
     .join("+")}`;
-  fetch(url)
+  console.log("url:", url);
+  return fetch(url)
     .then(r => {
       return r.json();
     })
     .then(data => {
-      const { phraseSynonyms } = data;
-      return phraseSynonyms;
+      const { synonyms } = data;
+      return synonyms;
     })
     .catch(error => {
       console.error("API error", url, error);
     });
 };
-
+// https://codereview.stackexchange.com/a/52157
+const allPossiblePhrases = (
+  array: string[][],
+  result: any = null,
+  index = 0
+) => {
+  if (!result) {
+    result = [];
+    index = 0;
+    array = array.map(function(element: any) {
+      return element.push ? element : [element];
+    });
+  }
+  if (index < array.length) {
+    array[index].forEach(function(element: any) {
+      var a = array.slice(0);
+      a.splice(index, 1, [element]);
+      allPossiblePhrases(a, result, index + 1);
+    });
+  } else {
+    result.push(array.join(" "));
+  }
+  return result;
+};
 export default class extends Component {
-  state = { phrase: "", loading: false };
   apiDebouncer: number = 0;
-  inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let { name, value } = e.target;
-    this.setState({ [name]: value, loading: true });
+  state = {
+    phrase: "",
+    loading: false,
+    // prettier-ignore
+    phraseSynonyms: [
+      ["chill","chilly","cold","groovy","neat","peachy","good","great","nifty","dandy"],
+      ["word","idiom","idiomatic expression","articulate","formulate","musical phrase","phrasal idiom","set phrase","catchphrase","words"]
+    ],
+    allPossiblePhrases: []
+  };
+  componentDidMount() {
+    this.setState({
+      allPossiblePhrases: allPossiblePhrases(this.state.phraseSynonyms)
+    });
+  }
+  processAllTheThings = async (phrase: string) => {
+    const phraseSynonyms = await getPhraseSynonyms(phrase);
+    console.log("phraseSynonyms:", phraseSynonyms);
+    this.setState({
+      loading: false,
+      phraseSynonyms,
+      allPossiblePhrases: allPossiblePhrases(phraseSynonyms)
+    });
+  };
+  phraseInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const phrase = e.target.value;
+    this.setState({ phrase, loading: true });
     clearTimeout(this.apiDebouncer);
     this.apiDebouncer = window.setTimeout(() => {
-      getPhraseSynonyms(this.state.phrase).then(phraseSynonyms => {
-        this.setState({ phraseSynonyms, loading: false });
-      });
+      this.processAllTheThings(phrase);
     }, 500);
   };
   render() {
-    const { loading, phraseSynonyms } = this.state;
+    const { loading, allPossiblePhrases } = this.state;
     return (
       <main>
         <form
@@ -46,11 +92,18 @@ export default class extends Component {
             name="phrase"
             value={this.state.phrase}
             placeholder="Cool phrase.."
-            onChange={this.inputHandler}
-            onInput={this.inputHandler}
+            onChange={this.phraseInputHandler}
+            onInput={this.phraseInputHandler}
           />
         </form>
-        {loading ? <p>Loading..</p> : <p>words</p>}
+        {loading ? (
+          <p>Loading..</p>
+        ) : (
+          <ul>
+            {allPossiblePhrases &&
+              allPossiblePhrases.map((phrase, i) => <li key={i}>{phrase}</li>)}
+          </ul>
+        )}
       </main>
     );
   }
