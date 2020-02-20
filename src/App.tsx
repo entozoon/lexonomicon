@@ -1,33 +1,39 @@
 import React, { Component } from "react";
 import "./App.scss";
 
-export default class extends Component {
-  state = { phrase: "" };
-  apiDebouncer: number = 0;
+const getPhraseSynonyms = async (phrase: string) => {
+  console.log("phrase", phrase);
+  let url = `https://iinvq9pu20.execute-api.us-east-1.amazonaws.com/dev/phraseSynonyms?phrase=${phrase
+    .split(" ")
+    .join("+")}`;
+  fetch(url)
+    .then(r => {
+      return r.json();
+    })
+    .then(data => {
+      const { phraseSynonyms } = data;
+      return phraseSynonyms;
+    })
+    .catch(error => {
+      console.error("API error", url, error);
+    });
+};
 
-  componentDidMount() {
-    let url = `https://iinvq9pu20.execute-api.us-east-1.amazonaws.com/dev/synonyms?phrase=hell+explorer`;
-    fetch(url)
-      .then(r => {
-        return r.json();
-      })
-      .then(data => {
-        const { synonyms } = data;
-        console.log(synonyms);
-      });
-  }
-  getSynonyms(phrase: string) {
-    console.log("phrase", phrase);
-  }
+export default class extends Component {
+  state = { phrase: "", loading: false };
+  apiDebouncer: number = 0;
   inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { name, value } = e.target;
-    this.setState({ [name]: value });
+    this.setState({ [name]: value, loading: true });
     clearTimeout(this.apiDebouncer);
     this.apiDebouncer = window.setTimeout(() => {
-      this.getSynonyms(this.state.phrase);
+      getPhraseSynonyms(this.state.phrase).then(phraseSynonyms => {
+        this.setState({ phraseSynonyms, loading: false });
+      });
     }, 500);
   };
   render() {
+    const { loading, phraseSynonyms } = this.state;
     return (
       <main>
         <form
@@ -44,6 +50,7 @@ export default class extends Component {
             onInput={this.inputHandler}
           />
         </form>
+        {loading ? <p>Loading..</p> : <p>words</p>}
       </main>
     );
   }
