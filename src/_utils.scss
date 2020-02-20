@@ -1,0 +1,24 @@
+@mixin responsive-value(
+  $size-min,
+  $size-max,
+  $width-min: 768px,
+  $width-max: 2000px,
+  $property: "font-size"
+) {
+  // Min size
+  #{$property}: $size-min;
+  // Scaling within constraints
+  @media screen and (min-width: $width-min) {
+    #{$property}: calc(
+      #{$size-min} + #{strip-unit($size-max - $size-min)} *
+        ((100vw - #{$width-min}) / #{strip-unit($width-max - $width-min)})
+    );
+  }
+  // Max size
+  @media screen and (min-width: $width-max) {
+    #{$property}: $size-max;
+  }
+}
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}

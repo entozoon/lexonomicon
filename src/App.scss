@@ -1,38 +1,70 @@
-.App {
-  text-align: center;
+@import "./utils";
+* {
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html {
+  height: 100%;
+  font-size: 62.5%;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+body {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: flex-start;
+  background: black;
+  color: tomato;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1.5;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  @include responsive-value(
+    $size-min: 14px,
+    $size-max: 18px,
+    $width-min: 300px,
+    $width-max: 1800px,
+    $property: "font-size"
+  );
 }
-
-.App-link {
-  color: #61dafb;
+#root {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 50%;
+  max-width: 24em;
+  margin: 20vh auto 0;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+main,
+form {
+  width: 100%;
+}
+h1 {
+  padding: 0;
+  margin: 0 0 0.25em;
+}
+p {
+  padding: 0;
+  margin: 0 0 2em;
+  color: #aaa;
+}
+input {
+  display: block;
+  width: 100%;
+  padding: 0.5em;
+  margin: 0 0 0em;
+  font-size: inherit;
+  font-family: inherit;
+  background: #151111;
+}
+input,
+::placeholder {
+  color: rgb(243, 157, 60);
+}
+ul {
+  padding: 0.5em;
+  margin: 0;
+}
+li {
+  // text-transform: capitalize;
+  list-style-type: none;
 }

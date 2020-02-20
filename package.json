@@ -1,5 +1,6 @@
 {
-  "name": "dwad",
+  "name": "Lexonomicon",
+  "description": "Find alternate words for a phrase",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

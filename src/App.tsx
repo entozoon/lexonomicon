@@ -82,6 +82,10 @@ export default class extends Component {
     const { loading, allPossiblePhrases } = this.state;
     return (
       <main>
+        <h1>Lexonomicon</h1>
+        <p>
+          Type a phrase to find alternative versions of that.. of that phrase.
+        </p>
         <form
           onSubmit={e => {
             e && e.preventDefault();
@@ -97,11 +101,15 @@ export default class extends Component {
           />
         </form>
         {loading ? (
-          <p>Loading..</p>
+          <ul>
+            <li>Loading..</li>
+          </ul>
         ) : (
           <ul>
             {allPossiblePhrases &&
-              allPossiblePhrases.map((phrase, i) => <li key={i}>{phrase}</li>)}
+              allPossiblePhrases.map((phrase: string, i) => (
+                <li key={i}>{phrase.replace(/^\w/, c => c.toUpperCase())}</li>
+              ))}
           </ul>
         )}
       </main>
