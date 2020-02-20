@@ -1,8 +1,8 @@
 # Lexonomicon
 
-Find alternate words for a phrase
+Find alternate words for a phrase.
 
-Lexonomicon.netlify...
+# **[Lexonomicon.netlify.com](lexonomicon.netlify.com)**
 
 ## Resources
 
